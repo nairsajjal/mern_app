@@ -7,6 +7,9 @@ const PORT = 4000;
 
 const mongoose = require('mongoose');
 
+let Todo = require('./todo.model');
+
+
 app.use(cors());
 app.use(bodyParser.json());
 
