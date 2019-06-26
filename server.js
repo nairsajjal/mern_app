@@ -3,6 +3,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const PORT = 4000;
+const todoRoutes = express.Router();
 
 
 const mongoose = require('mongoose');
@@ -19,6 +20,36 @@ const connection = mongoose.connection;
 connection.once('open', function(){
     console.log("Mongodb connection established");
 });
+
+todoRoutes.route('/').get(function(req,res){
+    Todo.find(function(err, todos){
+        if(err){
+            console.log(err);
+        }else{
+            res.json(todos);
+        }
+    });
+});
+
+todoRoutes.route('/:id').get(function(req,res){
+    let id= req.params.id;
+    Todo.findById(id, function(err, todo){
+        res.json(todo);
+    });
+});
+
+todoRoutes.route('/add').post(function(req,res){
+    let todo= new Todo(req.body);
+    todo.save()
+    .then(todo => {
+        res.status(200).json({'todo': 'todo added successfully'});
+    })
+    .catch(err => {
+        res.status(404).send('adding new todo failed');
+    })
+});
+
+app.use('/todos', todoRoutes);
 
 app.listen(PORT, function(){  
     console.log("Server started on 4000");
